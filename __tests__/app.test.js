@@ -55,7 +55,6 @@ describe("GET: /api/topics", () => {
         return request(app).get("/api")
         .expect(200)
         .then(({body}) => {
-            console.log(body)
             expect(typeof body).toBe('object')
             expect(typeof body['GET /api']).toBe('object')
             expect(typeof body['GET /api/topics']).toBe('object')
@@ -82,6 +81,52 @@ describe("GET: /api/topics", () => {
                 expect(Array.isArray(body[key].queries)).toBe(true)
                 expect(typeof body[key].exampleResponse).toBe('object')
             })
+        })
+    })
+ })
+
+ describe("GET: /api/articles/:article_id", () => {
+    test("GET:200 should respond with an object", () => {
+        return request(app).get("/api/articles/1")
+        .expect(200)
+        .then(({body}) => {
+            expect(typeof body).toBe('object')
+        })
+    })
+    test("GET:200 returns an article based on the id given as a parameter", () => {
+        return request(app).get("/api/articles/1")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article_id).toBe(1)
+        })
+    })
+    test("GET:200 returns a correctly formatted article with all the correct properties", () => {
+        return request(app).get("/api/articles/1")
+        .expect(200)
+        .then(({body}) => {
+            console.log(body)
+            expect(typeof body.article_id).toBe('number')
+            expect(typeof body.author).toBe('string')
+            expect(typeof body.title).toBe('string')
+            expect(typeof body.body).toBe('string')
+            expect(typeof body.topic).toBe('string')
+            expect(typeof body.created_at).toBe('string')
+            expect(typeof body.votes).toBe('number')
+            expect(typeof body.article_img_url).toBe('string')
+        })
+    })
+    test("GET:400 returns an appropriate status and message when passed an invalid parameter", () => {
+        return request(app).get("/api/articles/not_a_number")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("GET:404 returns an appropriate status and message when passed a valid id that is not present in the table", () => {
+        return request(app).get("/api/articles/99")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
         })
     })
  })
