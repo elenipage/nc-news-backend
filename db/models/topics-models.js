@@ -1,11 +1,8 @@
 const db = require("../connection")
-const fs = require("fs/promises")
+const endpoints = require("../../endpoints.json")
 
 const fetchEndpoints = () => {
-    return fs.readFile(`endpoints.json`, 'utf8', (err, data) => {return data})
-    .then((data) => {
-        return JSON.parse(data)
-    })
+        return endpoints
 }
 
 const fetchTopics = () => {
@@ -15,7 +12,7 @@ const fetchTopics = () => {
     })
 }
 
-const fetchArticle = (id) => {
+const fetchArticleById = (id) => {
     return db.query(`SELECT * FROM articles
         WHERE article_id = $1`, [id])
         .then(({rows}) => {
@@ -26,4 +23,4 @@ const fetchArticle = (id) => {
         })
 }
 
-module.exports = { fetchTopics, fetchEndpoints, fetchArticle }
+module.exports = { fetchTopics, fetchEndpoints, fetchArticleById }
