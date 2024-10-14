@@ -42,3 +42,46 @@ describe("GET: /api/topics", () => {
         })
     })
  })
+
+ describe("GET: /api", () => {
+    test("GET:200 should respond with an object", () => {
+        return request(app).get("/api")
+        .expect(200)
+        .then(({body}) => {
+            expect(typeof body).toBe('object')
+        })
+    })
+    test("GET:200 should respond with an object with each endpoint as a property, and an object full of information as its value", () => {
+        return request(app).get("/api")
+        .expect(200)
+        .then(({body}) => {
+            console.log(body)
+            expect(typeof body).toBe('object')
+            expect(typeof body['GET /api']).toBe('object')
+            expect(typeof body['GET /api/topics']).toBe('object')
+            expect(typeof body['GET /api/articles']).toBe('object')
+        })
+    })
+    test("GET:200 all endpoint objects should include a description property", () => {
+        return request(app).get("/api")
+        .expect(200)
+        .then(({body}) => {
+            const keys = Object.keys(body)
+            keys.forEach(key => {
+                expect(typeof body[key].description).toBe('string')
+            })
+        })
+    })
+    test(`GET:200 all endpoint objects except for "/api" should include queries array and exampleResponse object as properties`, () => {
+        return request(app).get("/api")
+        .expect(200)
+        .then(({body}) => {
+            const keys = Object.keys(body)
+            keys.shift()
+            keys.forEach(key => {
+                expect(Array.isArray(body[key].queries)).toBe(true)
+                expect(typeof body[key].exampleResponse).toBe('object')
+            })
+        })
+    })
+ })
