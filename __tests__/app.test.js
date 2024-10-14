@@ -16,8 +16,8 @@ describe("Invalid endpoint", () => {
     test("GET:404 should respond with the appropriate status and error message if endpoint doesn't exist or is mistyped", () => {
         return request(app).get("/api/invalid")
         .expect(404)
-        .then((response) => {
-            expect(response.res.statusMessage).toBe('Not Found')
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
         })  
     })
 })
