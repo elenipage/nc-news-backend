@@ -127,7 +127,6 @@ describe("GET: /api/topics", () => {
         return request(app).get("/api/articles")
         .expect(200)
         .then(({body}) => {
-            console.log(body.articles)
             expect(Array.isArray(body.articles)).toBe(true)
             expect(body.articles.length).not.toBe(0)
             expect(typeof body.articles[0]).toBe('object')
@@ -148,7 +147,6 @@ describe("GET: /api/topics", () => {
             expect(typeof article.comment_count).toBe('string')
             expect(article.hasOwnProperty('body')).toBe(false)
             })
-            
         })
     })
     test("GET:200 articles are sorted by date in descending order", () => {
@@ -159,3 +157,50 @@ describe("GET: /api/topics", () => {
             })
     })
 })
+
+describe("GET: /api/articles/:article_id/comments", () => {
+    test("GET:200 returns an array of correctly formatted comments with the given article_id", () => {
+        return request(app).get("/api/articles/1/comments")
+        .expect(200)
+        .then(({body}) => {
+            body.comments.forEach(comment => {
+                expect(comment.article_id).toBe(1)
+                expect(typeof comment.comment_id).toBe('number')
+                expect(typeof comment.votes).toBe('number')
+                expect(typeof comment.created_at).toBe('string')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.body).toBe('string')
+            })
+            
+        })
+    })
+    test("GET:200 comments should be returned with the most recent comment first", () => {
+        return request(app).get("/api/articles/1/comments")
+        .expect(200)
+        .then(({body}) => {
+            console.log(body)
+            expect(body.comments).toBeSortedBy( "created_at", {descending: true})
+        })
+    })
+    test("GET:200 when passed an article_id that is valid but has no comments, returns an empty array", () => {
+        return request(app).get("/api/articles/2/comments")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.comments).toEqual([])
+        })
+    })
+    test("GET:400 when given an invalid id parameter, responds with an appropriate status and message", () => {
+        return request(app).get("/api/articles/not_a_number/comments")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("GET:404 when given an id parameter that doesn't exist in the database, responds with an appropriate status and message", () => {
+        return request(app).get("/api/articles/99/comments")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+ })

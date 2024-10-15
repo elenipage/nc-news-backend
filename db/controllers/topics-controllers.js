@@ -1,5 +1,4 @@
-const { forEach } = require("../data/test-data/articles")
-const { fetchTopics, fetchEndpoints, fetchArticleById, fetchArticles } = require("../models/topics-models")
+const { fetchTopics, fetchEndpoints } = require("../models/topics-models")
 
 
 const getTopics = (request, response, next) => {
