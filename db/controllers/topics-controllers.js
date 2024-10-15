@@ -1,4 +1,5 @@
-const { fetchTopics, fetchEndpoints, fetchArticleById } = require("../models/topics-models")
+const { forEach } = require("../data/test-data/articles")
+const { fetchTopics, fetchEndpoints, fetchArticleById, fetchArticles } = require("../models/topics-models")
 
 
 const getTopics = (request, response, next) => {
@@ -19,15 +20,6 @@ const getEndpoints = (request, response, next) => {
     })
 }
 
-const getArticleById = (request, response, next) => {
-    const id = request.params.article_id
-    fetchArticleById(id)
-    .then((article) => {
-        response.status(200).send(article)
-    })
-    .catch((err) => {
-        next(err)
-    })
-}
 
-module.exports = { getTopics, getEndpoints, getArticleById }
+
+module.exports = { getTopics, getEndpoints }
