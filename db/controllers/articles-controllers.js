@@ -1,5 +1,4 @@
-const { forEach } = require("../data/test-data/articles")
-const { fetchArticleById, fetchArticles } = require("../models/articles-models")
+const { fetchArticleById, fetchArticles, fetchCommentsById } = require("../models/articles-models")
 
 const getArticleById = (request, response, next) => {
     const id = request.params.article_id
@@ -22,4 +21,18 @@ const getArticles = (request, response, next) => {
     })
 }
 
-module.exports = { getArticleById, getArticles }
+const getCommentsById = (request, response, next) => {
+    const id = request.params.article_id
+    const promises = [fetchArticleById(id), fetchCommentsById(id)]
+    
+    Promise.all(promises)
+    .then((results) => {
+        const comments = results[1]
+        response.status(200).send({comments: comments})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getArticleById, getArticles, getCommentsById }

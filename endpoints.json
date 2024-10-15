@@ -37,5 +37,21 @@
           "votes": 0,
           "comment_count": 6
         }
+  },
+  "GET /api/articles/:id/comments": {
+    "description": "serves all of the comments for the corresponding article id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 9,
+          "body": "Superficially charming",
+          "article_id": 1,
+          "author": "comment author",
+          "votes": 0,
+          "created_at": "2020-01-01T03:08:00.000Z"
+        }
+      ]
+    }
   }
 }
