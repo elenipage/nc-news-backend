@@ -1,3 +1,4 @@
+const format = require("pg-format")
 const db = require("../connection")
 
 const fetchArticleById = (id) => {
@@ -29,4 +30,12 @@ const fetchCommentsById = (id) => {
     })
 }
 
-module.exports = { fetchArticleById, fetchArticles, fetchCommentsById }
+const insertCommentById = (newBody, id) => {
+    const { body, author } = newBody
+    return db.query(`INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *`, [body, author, id])
+    .then(({rows}) => {
+        return rows
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticles, fetchCommentsById, insertCommentById }

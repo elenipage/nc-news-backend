@@ -53,5 +53,24 @@
         }
       ]
     }
-  }
+  },
+  "POST /api/articles/:id/comments": {
+    "description": "adds a new comment to the database with the given article id",
+    "queries": [],
+    "exampleRequestBody": {
+          "body": "Here's an example new comment",
+          "author": "coolusername2648"
+        },
+    "exampleResponse": {
+      "comment": 
+        {
+          "comment_id": 19,
+          "body": "Here's an example new comment",
+          "article_id": 2,
+          "author": "coolusername2648",
+          "votes": 0,
+          "created_at": "2020-01-01T03:08:00.000Z"
+        }
+      }
+    }
 }
