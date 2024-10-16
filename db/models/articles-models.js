@@ -38,4 +38,12 @@ const insertCommentById = (newBody, id) => {
     })
 }
 
-module.exports = { fetchArticleById, fetchArticles, fetchCommentsById, insertCommentById }
+const patchVotes = (body, id) => {
+    const { inc_votes } = body
+    return db.query(`UPDATE articles SET votes = votes + $1 WHERE articles.article_id = $2 RETURNING *`, [inc_votes, id])
+    .then(({rows}) => {
+        return rows[0]
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticles, fetchCommentsById, insertCommentById, patchVotes }
