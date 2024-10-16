@@ -184,6 +184,22 @@ describe("GET: /api/topics", () => {
             expect(body.msg).toBe('Bad Request')
             })
     })
+    test("GET:200 accepts a topic query which filters the articles by the topic value specified", () => {
+        return request(app).get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({body}) => {
+            body.articles.forEach((article) => {
+                expect(article.topic).toBe('mitch')
+            })
+        })
+    })
+    test("GET:404 if the topic passed is invalid or not present in the database, return an appropriate status and message", () => {
+        return request(app).get("/api/articles?topic=octopuses")
+        .expect(404)
+        .then(({body}) => {
+                expect(body.msg).toBe('Not Found')
+        })
+    })
 })
 
 describe("GET: /api/articles/:article_id/comments", () => {
