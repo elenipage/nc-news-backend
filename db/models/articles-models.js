@@ -22,22 +22,6 @@ const fetchArticles = () => {
     })
 }
 
-const fetchCommentsById = (id) => {
-    return db.query(`SELECT * FROM comments WHERE article_id = $1
-        ORDER BY created_at DESC`, [id])
-    .then(({rows}) => {
-        return rows
-    })
-}
-
-const insertCommentById = (newBody, id) => {
-    const { body, author } = newBody
-    return db.query(`INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *`, [body, author, id])
-    .then(({rows}) => {
-        return rows
-    })
-}
-
 const patchVotes = (body, id) => {
     const { inc_votes } = body
     return db.query(`UPDATE articles SET votes = votes + $1 WHERE articles.article_id = $2 RETURNING *`, [inc_votes, id])
@@ -46,4 +30,4 @@ const patchVotes = (body, id) => {
     })
 }
 
-module.exports = { fetchArticleById, fetchArticles, fetchCommentsById, insertCommentById, patchVotes }
+module.exports = { fetchArticleById, fetchArticles, patchVotes }
