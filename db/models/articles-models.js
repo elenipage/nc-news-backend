@@ -12,7 +12,7 @@ const fetchArticleById = (id) => {
         })
 }
 
-const fetchArticles = (sort_by = 'created_at', order = 'DESC') => {
+const fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
     const validSortBy = [ 'created_at', 'article_id', 'author', 'title', 'topic', 'votes', 'article_img_url', 'comment_count' ]
     const validOrder = ['ASC','DESC']
     
@@ -21,14 +21,22 @@ const fetchArticles = (sort_by = 'created_at', order = 'DESC') => {
     }
     
     let queryStr = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id) AS comment_count 
-    FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id`
+    FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id`
 
-    queryStr += ` ORDER BY ${sort_by}`
+    let queryVals = []
+    if(topic) {
+        queryStr += ` WHERE topic = $1`
+        queryVals.push(topic)
+    }
+
+    queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by}`
     queryStr += ` ${order.toUpperCase()}`
 
-    return db.query(queryStr)
+    return db.query(queryStr, queryVals)
     .then(({rows}) => {
+        if (rows.length === 0) {
+            return Promise.reject({status : 404, msg: 'Not Found'})
+        }
         return rows
     })
 }
