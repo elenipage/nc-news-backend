@@ -321,3 +321,32 @@ describe("GET: /api/articles/:article_id/comments", () => {
         })
     })
  })
+
+ describe("DELETE:204 /api/comments/:comment_id", () => {
+    test("DELETE:204 deletes the comment with the corresponding id from the comments database", () => {
+        return request(app).delete("/api/comments/1")
+        .expect(204)
+        .then(() => {
+        return request(app).delete("/api/comments/1")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Comment Not Found')
+        })
+        })
+    })
+    test("DELETE:400 when passed an invalid id, responds with the appropriate status and message", () => {
+        return request(app).delete("/api/comments/not_an_id")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("DELETE:404 when passed an id for a comment that is not in the database, responds with the appropriate status and message", () => {
+        return request(app).delete("/api/comments/99")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Comment Not Found')
+        })
+    })
+})
+    
