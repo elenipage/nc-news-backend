@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, fetchCommentsById, insertCommentById } = require("../models/articles-models")
+const { fetchArticleById, fetchArticles, fetchCommentsById, insertCommentById, patchVotes } = require("../models/articles-models")
 
 
 const getArticleById = (request, response, next) => {
@@ -51,4 +51,19 @@ const postCommentById = (request, response, next) => {
     })
 }
 
-module.exports = { getArticleById, getArticles, getCommentsById, postCommentById }
+const incrementVotes = (request, response, next) => {
+    const id = request.params.article_id
+    const body = request.body
+    const promises = [fetchArticleById(id), patchVotes(body, id)]
+    
+    Promise.all(promises)
+    .then((results) => {
+        const article = results[1]
+        response.status(200).send({article: article})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getArticleById, getArticles, getCommentsById, postCommentById, incrementVotes }

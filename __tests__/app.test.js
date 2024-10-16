@@ -258,3 +258,66 @@ describe("GET: /api/articles/:article_id/comments", () => {
         })
     })
  })
+
+ describe("PATCH: /api/articles/:article_id", () => {
+    test("PATCH:200 increments the votes by the given value for the article with the corresponding id, then returns the updated article", () => {
+        const voteIncrement = {
+            inc_votes: 1
+        }
+        return request(app).patch("/api/articles/1")
+        .send(voteIncrement)
+        .expect(200)
+        .then(({body}) => {
+            expect(body.article.article_id).toBe(1)
+            expect(body.article.votes).toBe(101)
+            expect(typeof body.article.author).toBe('string')
+            expect(typeof body.article.title).toBe('string')
+            expect(typeof body.article.body).toBe('string')
+            expect(typeof body.article.topic).toBe('string')
+            expect(typeof body.article.created_at).toBe('string')
+            expect(typeof body.article.article_img_url).toBe('string')
+        })
+    })
+    test("PATCH:400 when passed an invalid article id, returns the appropriate status and message", () => {
+        const voteIncrement = {
+            inc_votes: 1
+        }
+        return request(app).patch("/api/articles/not_an_id")
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("PATCH:400 when passed an incomplete vote increment, returns the appropriate status and message", () => {
+        const voteIncrement = {
+        }
+        return request(app).patch("/api/articles/1")
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("PATCH:400 when passed an invalid vote increment, returns the appropriate status and message", () => {
+        const voteIncrement = {
+            inc_votes: 'not a number'
+        }
+        return request(app).patch("/api/articles/1")
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("PATCH:404 when passed a valid article id that does not exist in the database, returns the appropriate status and message", () => {
+        const voteIncrement = {
+        }
+        return request(app).patch("/api/articles/99")
+        .send(voteIncrement)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+ })
