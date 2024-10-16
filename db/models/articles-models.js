@@ -12,11 +12,22 @@ const fetchArticleById = (id) => {
         })
 }
 
-const fetchArticles = () => {
-    return db.query(`SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id) AS comment_count 
+const fetchArticles = (sort_by = 'created_at', order = 'DESC') => {
+    const validSortBy = [ 'created_at', 'article_id', 'author', 'title', 'topic', 'votes', 'article_img_url', 'comment_count' ]
+    const validOrder = ['ASC','DESC']
+    
+    if(!validSortBy.includes(sort_by) || !validOrder.includes(order.toUpperCase())) {
+        return Promise.reject({status : 400, msg: 'Bad Request'})
+    }
+    
+    let queryStr = `SELECT articles.article_id, articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comment_id) AS comment_count 
     FROM comments RIGHT JOIN articles ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC`)
+    GROUP BY articles.article_id`
+
+    queryStr += ` ORDER BY ${sort_by}`
+    queryStr += ` ${order.toUpperCase()}`
+
+    return db.query(queryStr)
     .then(({rows}) => {
         return rows
     })

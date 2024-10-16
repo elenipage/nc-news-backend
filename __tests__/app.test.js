@@ -122,7 +122,7 @@ describe("GET: /api/topics", () => {
     })
  })
 
- describe("GET: /api/articles", () => {
+ describe.only("GET: /api/articles", () => {
     test("GET:200 returns an array of article objects", () => {
         return request(app).get("/api/articles")
         .expect(200)
@@ -154,6 +154,34 @@ describe("GET: /api/topics", () => {
         .expect(200)
         .then(({body}) => {
             expect(body.articles).toBeSortedBy('created_at', {descending: true})
+            })
+    })
+    test("GET:200 accepts a sort_by query which sorts the articles by the given column", () => {
+        return request(app).get("/api/articles?sort_by=votes")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSortedBy('votes', {descending: true})
+            })
+    })
+    test("GET:200 accepts an order query which sorts the articles in the given order", () => {
+        return request(app).get("/api/articles?order=asc")
+        .expect(200)
+        .then(({body}) => {
+            expect(body.articles).toBeSorted({ascending: true})
+            })
+    })
+    test("GET:400 when passed an invalid sort_by column, returns appropriate status and message", () => {
+        return request(app).get("/api/articles?sort_by=not_a_column")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+            })
+    })
+    test("GET:400 when passed an invalid order, returns appropriate status and message", () => {
+        return request(app).get("/api/articles?order=not_an_order")
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
             })
     })
 })
