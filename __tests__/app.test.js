@@ -178,7 +178,6 @@ describe("GET: /api/articles/:article_id/comments", () => {
         return request(app).get("/api/articles/1/comments")
         .expect(200)
         .then(({body}) => {
-            console.log(body)
             expect(body.comments).toBeSortedBy( "created_at", {descending: true})
         })
     })
@@ -198,6 +197,61 @@ describe("GET: /api/articles/:article_id/comments", () => {
     })
     test("GET:404 when given an id parameter that doesn't exist in the database, responds with an appropriate status and message", () => {
         return request(app).get("/api/articles/99/comments")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+ })
+
+ describe("POST: /api/articles/:article_id/comments", () => {
+    test("POST:201 inserts a new comment into the database and returns the posted comment", () => {
+        const newComment = {
+            body: "this is a new test comment",
+            author: 'rogersop'
+        }
+        return request(app).post("/api/articles/2/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({body}) => {
+            expect(body.comment.article_id).toBe(2)
+            expect(body.comment.comment_id).toBe(19)
+            expect(typeof body.comment.votes).toBe('number')
+            expect(typeof body.comment.created_at).toBe('string')
+            expect(typeof body.comment.author).toBe('string')
+            expect(typeof body.comment.body).toBe('string')
+        })
+    })
+    test("POST:400 when passed an invalid article id, responds with an appropriate status and message", () => {
+        const newComment = {
+            body: "this is a new test comment",
+            author: 'rogersop'
+        }
+        return request(app).post("/api/articles/not_a_valid_id/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("POST:400 when passed an incomplete comment, responds with an appropriate message and status", () => {
+        const newComment = {
+            author: 'rogersop'
+        }
+        return request(app).post("/api/articles/2/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("POST:404 when passed a valid article id that does not exist in the database, responds with an appropriate status and message", () => {
+        const newComment = {
+            body: "this is a new test comment",
+            author: 'rogersop'
+        }
+        return request(app).post("/api/articles/99/comments")
+        .send(newComment)
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe('Not Found')
