@@ -91,6 +91,7 @@
   },
   "DELETE /api/comments/:id": {
     "description": "deletes the comment with the corresponding comment id, responds with a status 204 and no content",
-    "queries": []
+    "queries": [],
+    "exampleResponse": {}
   }
 }
