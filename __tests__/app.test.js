@@ -493,4 +493,22 @@ describe("PATCH: /api/articles/:article_id", () => {
         })
     })
 })
-    
+describe("GET:200 /api/users/:username", () => {
+    test("GET:200 should respond with the user object for the corresponding username", () => {
+        return request(app).get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({body}) => {
+            const user = body.user
+            expect(typeof user.username).toBe('string')
+            expect(typeof user.name).toBe('string')
+            expect(typeof user.avatar_url).toBe('string')
+        })
+    })
+    test("GET:404 when passed a username that doesn't exist, returns appropriate status and message", () => {
+        return request(app).get("/api/users/not_a_user")
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+})
