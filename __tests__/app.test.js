@@ -77,7 +77,7 @@ describe("GET: /api/topics", () => {
     })
 })
 
- describe.only("GET: /api/articles/:article_id", () => {
+ describe("GET: /api/articles/:article_id", () => {
     test("GET:200 should respond with an object", () => {
         return request(app).get("/api/articles/1")
         .expect(200)
@@ -294,6 +294,18 @@ describe("GET: /api/articles/:article_id/comments", () => {
         const newComment = {
             body: "this is a new test comment",
             author: 'rogersop'
+        }
+        return request(app).post("/api/articles/99/comments")
+        .send(newComment)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Not Found')
+        })
+    })
+    test("POST:404 when passed an author that doesn't exist in the database responds with the appropriate status and message", () => {
+        const newComment = {
+            body: "this is a new test comment",
+            author: 'notAnAuthor'
         }
         return request(app).post("/api/articles/99/comments")
         .send(newComment)
