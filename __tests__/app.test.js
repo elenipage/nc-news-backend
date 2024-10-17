@@ -77,7 +77,7 @@ describe("GET: /api/topics", () => {
     })
 })
 
- describe("GET: /api/articles/:article_id", () => {
+ describe.only("GET: /api/articles/:article_id", () => {
     test("GET:200 should respond with an object", () => {
         return request(app).get("/api/articles/1")
         .expect(200)
@@ -104,6 +104,7 @@ describe("GET: /api/topics", () => {
             expect(typeof body.created_at).toBe('string')
             expect(typeof body.votes).toBe('number')
             expect(typeof body.article_img_url).toBe('string')
+            expect(typeof body.comment_count).toBe('string')
         })
     })
     test("GET:400 returns an appropriate status and message when passed an invalid parameter", () => {
@@ -122,7 +123,7 @@ describe("GET: /api/topics", () => {
     })
  })
 
- describe.only("GET: /api/articles", () => {
+ describe("GET: /api/articles", () => {
     test("GET:200 returns an array of article objects", () => {
         return request(app).get("/api/articles")
         .expect(200)
