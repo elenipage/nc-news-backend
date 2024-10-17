@@ -123,7 +123,7 @@ describe("GET: /api/topics", () => {
     })
  })
 
- describe.only("GET: /api/articles", () => {
+ describe("GET: /api/articles", () => {
     test("GET:200 returns an array of article objects", () => {
         return request(app).get("/api/articles")
         .expect(200)

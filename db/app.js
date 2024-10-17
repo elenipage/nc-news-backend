@@ -1,33 +1,10 @@
 const express = require("express");
 const app = express();
-const { getTopics, getEndpoints } = require("./controllers/topics-controllers")
-const { getArticleById, getArticles, incrementVotes} = require("./controllers/articles-controllers")
-const { getCommentsById, postCommentById, deleteComment } = require("./controllers/comments-controllers")
-const { getUsers } = require("./controllers/users-controllers")
+const apiRouter = require("./routes/api-router")
 
 app.use(express.json())
 
-app.get("/api", getEndpoints)
-
-app.get("/api/topics", getTopics)
-
-app.get("/api/articles/:article_id", getArticleById)
-
-app.get("/api/articles", getArticles)
-
-app.get("/api/articles/:article_id/comments", getCommentsById)
-
-app.post("/api/articles/:article_id/comments", postCommentById)
-
-app.patch("/api/articles/:article_id", incrementVotes)
-
-app.delete("/api/comments/:comment_id", deleteComment)
-
-app.get("/api/users", getUsers)
-
-app.use("/api/*", (req, res) => {
-    res.status(404).send({ msg: 'Not Found'})
-})
+app.use("/api", apiRouter)
 
 app.use((err,req,res,next)=>{
     if(err.code==="23502" || err.code==='22P02'){
