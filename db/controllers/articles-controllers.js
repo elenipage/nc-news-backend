@@ -1,4 +1,5 @@
 const { fetchArticleById, fetchArticles, patchVotes } = require("../models/articles-models")
+const { fetchTopics } = require("../models/topics-models")
 
 
 const getArticleById = (request, response, next) => {
@@ -14,7 +15,16 @@ const getArticleById = (request, response, next) => {
 
 const getArticles = (request, response, next) => {
     const { sort_by, order, topic } = request.query
-    fetchArticles(sort_by, order, topic)
+    
+    fetchTopics()
+    .then((topics) => {
+        return topics.map((validTopic) => {
+            return validTopic.slug
+        })
+    })
+    .then((validTopics) => {
+        return fetchArticles(sort_by, order, topic, validTopics)
+    })
     .then((articles) => {
         response.status(200).send({articles: articles})
     })

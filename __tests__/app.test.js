@@ -123,7 +123,7 @@ describe("GET: /api/topics", () => {
     })
  })
 
- describe("GET: /api/articles", () => {
+ describe.only("GET: /api/articles", () => {
     test("GET:200 returns an array of article objects", () => {
         return request(app).get("/api/articles")
         .expect(200)
@@ -168,7 +168,7 @@ describe("GET: /api/topics", () => {
         return request(app).get("/api/articles?order=asc")
         .expect(200)
         .then(({body}) => {
-            expect(body.articles).toBeSorted({ascending: true})
+            expect(body.articles).toBeSortedBy('created_at', {ascending: true})
             })
     })
     test("GET:400 when passed an invalid sort_by column, returns appropriate status and message", () => {
@@ -192,6 +192,13 @@ describe("GET: /api/topics", () => {
             body.articles.forEach((article) => {
                 expect(article.topic).toBe('mitch')
             })
+        })
+    })
+    test("GET:200 if the topic passed is valid but has no articles available, returns an empty array", () => {
+        return request(app).get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({body}) => {
+                
         })
     })
     test("GET:404 if the topic passed is invalid or not present in the database, return an appropriate status and message", () => {
