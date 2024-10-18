@@ -7,7 +7,7 @@ app.use(express.json())
 app.use("/api", apiRouter)
 
 app.use((err,req,res,next)=>{
-    if(err.code==="23502" || err.code==='22P02'){
+    if(err.code==="23502" || err.code === "23503" || err.code==='22P02'){
         res.status(400).send({msg: 'Bad Request'})
     }
     else{
