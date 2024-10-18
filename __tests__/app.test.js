@@ -512,3 +512,64 @@ describe("GET:200 /api/users/:username", () => {
         })
     })
 })
+
+describe("PATCH:200 /api/comments/:comment_id", () => {
+    test("PATCH:200 should increment comment votes by the given amount and respond with the updated comment", () => {
+        const voteIncrement = {
+            inc_votes: 1
+        }
+        return request(app).patch("/api/comments/3")
+        .send(voteIncrement)
+        .expect(200)
+        .then(({body}) => {
+            const comment = body.comment
+                expect(comment.comment_id).toBe(3)
+                expect(comment.votes).toBe(101)
+                expect(typeof comment.created_at).toBe('string')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.body).toBe('string')
+        })
+    })
+    test("PATCH:400 when passed an invalid comment id, returns the appropriate status and message", () => {
+        const voteIncrement = {
+            inc_votes: 1
+        }
+        return request(app).patch("/api/comments/not_an_id")
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("PATCH:400 when passed an incomplete vote increment, returns the appropriate status and message", () => {
+        const voteIncrement = {
+        }
+        return request(app).patch("/api/comments/1")
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("PATCH:400 when passed an invalid vote increment, returns the appropriate status and message", () => {
+        const voteIncrement = {
+            inc_votes: 'not a number'
+        }
+        return request(app).patch("/api/comments/1")
+        .send(voteIncrement)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("PATCH:404 when passed a valid comment id that does not exist in the database, returns the appropriate status and message", () => {
+        const voteIncrement = {
+        }
+        return request(app).patch("/api/comments/99")
+        .send(voteIncrement)
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Comment Not Found')
+        })
+    })
+})

@@ -1,5 +1,5 @@
 const { fetchArticleById } = require("../models/articles-models")
-const { fetchCommentsById, insertCommentById, deleteCommentById } = require("../models/comments-models")
+const { fetchCommentsById, insertCommentById, deleteCommentById, patchCommentVotes } = require("../models/comments-models")
 
 const getCommentsById = (request, response, next) => {
     const id = request.params.article_id
@@ -30,6 +30,19 @@ const postCommentById = (request, response, next) => {
     })
 }
 
+const commentVotes = (request, response, next) => {
+    const { comment_id } = request.params
+    const body = request.body
+    
+    patchCommentVotes(body, comment_id)
+    .then((updatedComment) => {
+        response.status(200).send({comment: updatedComment})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
 const deleteComment = (request, response, next) => {
     const id = request.params.comment_id
     deleteCommentById(id)
@@ -41,4 +54,4 @@ const deleteComment = (request, response, next) => {
     })
 }
 
-module.exports = { getCommentsById, postCommentById, deleteComment}
+module.exports = { getCommentsById, postCommentById, deleteComment, commentVotes }

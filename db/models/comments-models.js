@@ -1,4 +1,3 @@
-const format = require("pg-format")
 const db = require("../connection")
 
 const fetchCommentsById = (id) => {
@@ -17,6 +16,24 @@ const insertCommentById = (newBody, id) => {
     })
 }
 
+const patchCommentVotes = (body, id) => {
+    const { inc_votes } = body
+    return db.query('SELECT * FROM comments WHERE comment_id = $1;', [id])
+    .then((result) => {
+      const comment = result.rows[0];
+      if (!comment) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Comment Not Found'
+            })
+        }
+    return db.query(`UPDATE comments SET votes = votes + $1 WHERE comments.comment_id = $2 RETURNING *`, [inc_votes, id])
+    })
+    .then(({rows}) => {
+        return rows[0]
+    })
+}
+
 const deleteCommentById = (id) => {
     return db.query('SELECT * FROM comments WHERE comment_id = $1;', [id])
     .then((result) => {
@@ -31,4 +48,4 @@ const deleteCommentById = (id) => {
     })
 }
 
-module.exports = { fetchCommentsById, insertCommentById, deleteCommentById }
+module.exports = { fetchCommentsById, insertCommentById, deleteCommentById, patchCommentVotes }
