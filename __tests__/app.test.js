@@ -573,3 +573,83 @@ describe("PATCH:200 /api/comments/:comment_id", () => {
         })
     })
 })
+
+describe("POST: /api/articles", () => {
+    test("POST:201 inserts a new article into the database and returns the posted article", () => {
+        const newArticle = {
+        title: "Do our cats watch us sleep?",
+        topic: "cats",
+        author: "rogersop",
+        body: "Cat owners across the globe begin to report their cats suddenly perching at the end of our beds, watching us.",
+        article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+
+        return request(app).post("/api/articles")
+        .send(newArticle)
+        .expect(201)
+        .then(({body}) => {
+            expect(body.article.article_id).toBe(14)
+            expect(body.article.votes).toBe(0)
+            expect(body.article.author).toBe('rogersop')
+            expect(body.article.title).toBe('Do our cats watch us sleep?')
+            expect(body.article.body).toBe('Cat owners across the globe begin to report their cats suddenly perching at the end of our beds, watching us.')
+            expect(body.article.topic).toBe('cats')
+            expect(typeof body.article.created_at).toBe('string')
+            expect(body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+        })
+    })
+    test("POST:200 when not passed an article_img_url, returns the default image url", () => {
+        const newArticle = {
+            title: "Do our cats watch us sleep?",
+            topic: "cats",
+            author: "rogersop",
+            body: "Cat owners across the globe begin to report their cats suddenly perching at the end of our beds, watching us."
+            }
+        return request(app).post("/api/articles")
+        .send(newArticle)
+        .expect(201)
+        .then(({body}) => {
+            expect(typeof body.article.article_img_url).toBe('string')
+        })
+    })
+    test("POST:400 when passed an incomplete comment, responds with an appropriate message and status", () => {
+        const newArticle = {
+            author: 'rogersop'
+        }
+        return request(app).post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("POST:400 when passed an author that doesn't exist in the users database responds with the appropriate status and message", () => {
+        const newArticle = {
+            title: 'Do our cats watch us sleep?',
+            topic: 'cats',
+            author: 'not_an_author',
+            body: 'Cat owners across the globe begin to report their cats suddenly perching at the end of our beds, watching us.'
+            }
+        return request(app).post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+    test("POST:400 when passed a topic that doesn't exist in the database responds with the appropriate status and message", () => {
+        const newArticle = {
+            title: "Do our cats watch us sleep?",
+            topic: "octopuses",
+            author: "rogersop",
+            body: "Cat owners across the globe begin to report their cats suddenly perching at the end of our beds, watching us."
+            }
+        return request(app).post("/api/articles")
+        .send(newArticle)
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    })
+ })

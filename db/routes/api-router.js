@@ -1,10 +1,10 @@
 const { getEndpoints, getTopics } = require("../controllers/topics-controllers");
 const { getUsers } = require("../controllers/users-controllers");
-
 const apiRouter = require("express").Router();
 const articlesRouter = require("./articles-router")
 const commentsRouter = require("./comments-router")
 const usersRouter = require("./users-router")
+
 
 apiRouter.use("/articles", articlesRouter)
 

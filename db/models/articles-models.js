@@ -1,5 +1,5 @@
 const db = require("../connection")
-const { fetchTopics } = require("./topics-models")
+const format = require("pg-format")
 
 
 const fetchArticleById = (id) => {
@@ -55,4 +55,25 @@ const patchVotes = (body, id) => {
     })
 }
 
-module.exports = { fetchArticleById, fetchArticles, patchVotes }
+const insertArticle = (newBody) => {
+    const { author, title, body, topic, article_img_url } = newBody
+    const formattedValues = [ author, title, body, topic ]
+    
+    let queryStr = `INSERT INTO articles (author, title, body, topic` 
+    
+    if (article_img_url) {
+        formattedValues.push(article_img_url)
+        queryStr += `, article_img_url`
+    }
+
+    queryStr += `) VALUES %L RETURNING *`
+    
+    formattedStr = format(queryStr, [formattedValues])
+    
+    return db.query(formattedStr)
+    .then(({rows}) => {
+        return rows[0]
+    })
+}
+
+module.exports = { fetchArticleById, fetchArticles, patchVotes, insertArticle }
