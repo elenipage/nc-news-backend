@@ -51,6 +51,9 @@ const incrementVotes = (request, response, next) => {
 const postArticle = (request, response, next) => {
     const body = request.body
     insertArticle(body)
+    .then((newArticleId) => {
+        return fetchArticleById(newArticleId)
+    })
     .then((newArticle) => {
         response.status(201).send({article: newArticle})
     })

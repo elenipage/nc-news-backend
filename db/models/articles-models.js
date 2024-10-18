@@ -66,13 +66,13 @@ const insertArticle = (newBody) => {
         queryStr += `, article_img_url`
     }
 
-    queryStr += `) VALUES %L RETURNING *`
+    queryStr += `) VALUES %L RETURNING articles.article_id`
     
     formattedStr = format(queryStr, [formattedValues])
     
     return db.query(formattedStr)
     .then(({rows}) => {
-        return rows[0]
+        return rows[0].article_id
     })
 }
 

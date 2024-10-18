@@ -597,6 +597,7 @@ describe("POST: /api/articles", () => {
             expect(body.article.topic).toBe('cats')
             expect(typeof body.article.created_at).toBe('string')
             expect(body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+            expect(body.article.comment_count).toBe('0')
         })
     })
     test("POST:200 when not passed an article_img_url, returns the default image url", () => {
